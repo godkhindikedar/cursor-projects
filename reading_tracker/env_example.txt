@@ -1,0 +1,16 @@
+# Environment Variables for Reading & Study Tracker
+# Copy this file to .env and fill in your values
+
+# Flask Secret Key - Change this to a random secret string
+SECRET_KEY=your-super-secret-key-change-this-to-something-random
+
+# MySQL Database Connection
+# Format: mysql+pymysql://username:password@host:port/database_name
+DATABASE_URL=mysql+pymysql://root:your_mysql_password@localhost:3306/reading_tracker
+
+# Google OAuth Client ID
+# Get this from Google Cloud Console -> APIs & Services -> Credentials
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+
+# Optional: Set to production for deployment
+# FLASK_ENV=development

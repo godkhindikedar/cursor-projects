@@ -1,0 +1,275 @@
+/* Kid-friendly color scheme and styling */
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f39c12;
+    --success-color: #27ae60;
+    --warning-color: #f1c40f;
+    --danger-color: #e74c3c;
+    --info-color: #3498db;
+    --light-bg: #f8f9fa;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-success: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    --gradient-warning: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* Navigation */
+.navbar {
+    background: var(--gradient-primary) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Cards */
+.card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.action-card {
+    background: linear-gradient(135deg, var(--bs-bg-opacity, 1), rgba(255,255,255,0.1));
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.book-card {
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--success-color);
+}
+
+.book-card:hover {
+    border-left-color: var(--warning-color);
+}
+
+/* Login page styling */
+.login-card {
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+}
+
+/* Subject selection buttons */
+.btn-check:checked + .btn-outline-primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.btn-check:checked + .btn-outline-success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    transform: scale(1.05);
+}
+
+.btn-check:checked + .btn-outline-warning {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+    transform: scale(1.05);
+}
+
+.btn-check:checked + .btn-outline-info {
+    background: var(--info-color);
+    border-color: var(--info-color);
+    transform: scale(1.05);
+}
+
+.btn-check:checked + .btn-outline-danger {
+    background: var(--danger-color);
+    border-color: var(--danger-color);
+    transform: scale(1.05);
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Welcome header */
+.welcome-header {
+    text-align: center;
+    padding: 20px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+    margin-bottom: 30px;
+}
+
+/* Timer display */
+#timer-display {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 25px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    padding: 20px;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+/* Table styling */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    transform: scale(1.01);
+    transition: all 0.3s ease;
+}
+
+/* Badges */
+.badge {
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-weight: 600;
+}
+
+/* Book rating stars */
+.book-rating {
+    animation: sparkle 3s infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .welcome-header h1 {
+        font-size: 2rem;
+    }
+    
+    .action-card .card-body {
+        padding: 20px 15px;
+    }
+    
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Fun background elements */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle, rgba(255,255,255,0.1) 2px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 100px 100px, 50px 50px;
+    animation: float 20s infinite linear;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes float {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Success animations */
+.animate-success {
+    animation: successBounce 0.6s ease-in-out;
+}
+
+@keyframes successBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    background: rgba(255,255,255,0.9) !important;
+    border-top: 3px solid var(--primary-color);
+}

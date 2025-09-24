@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}Study Sessions - Reading & Study Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-6 fw-bold text-primary">
+                <i class="fas fa-clock me-2"></i>
+                My Study Time
+                <i class="fas fa-graduation-cap text-warning"></i>
+            </h1>
+            {% if not active_session %}
+            <button class="btn btn-primary btn-lg" onclick="showStudyModal()">
+                <i class="fas fa-play me-2"></i>Start New Session
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Active Study Session -->
+{% if active_session %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg bg-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-2">
+                            <i class="fas fa-play-circle me-2"></i>
+                            Currently Studying: {{ active_session.subject.replace('_', ' ').title() }}
+                        </h3>
+                        <p class="mb-0 opacity-75">Started at {{ active_session.start_time.strftime('%I:%M %p') }}</p>
+                        <div class="mt-3">
+                            <span class="badge bg-success fs-5 px-3 py-2" id="timer-display">00:00:00</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-danger btn-lg" onclick="stopStudy()">
+                            <i class="fas fa-stop me-2"></i>Stop Studying
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Study Statistics -->
+{% if sessions %}
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-stopwatch fa-2x mb-2"></i>
+                <h4>{{ sessions|sum(attribute='duration_minutes') }}</h4>
+                <p class="mb-0">Total Minutes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-day fa-2x mb-2"></i>
+                <h4>{{ sessions|length }}</h4>
+                <p class="mb-0">Study Sessions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x mb-2"></i>
+                <h4>{{ (sessions|sum(attribute='duration_minutes') / sessions|length)|round|int if sessions else 0 }}</h4>
+                <p class="mb-0">Avg Minutes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-danger text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-books fa-2x mb-2"></i>
+                <h4>{{ sessions|map(attribute='subject')|unique|list|length }}</h4>
+                <p class="mb-0">Subjects</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Study Sessions List -->
+{% if sessions %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="fas fa-history me-2"></i>
+                    Your Study History
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 fw-bold text-primary">
+                                    <i class="fas fa-book-open me-1"></i>Subject
+                                </th>
+                                <th class="border-0 fw-bold text-primary">
+                                    <i class="fas fa-clock me-1"></i>Duration
+                                </th>
+                                <th class="border-0 fw-bold text-primary">
+                                    <i class="fas fa-calendar me-1"></i>Date & Time
+                                </th>
+                                <th class="border-0 fw-bold text-primary">
+                                    <i class="fas fa-comment me-1"></i>Notes
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for session in sessions %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% set subject_icons = {
+                                            'maths': 'fas fa-calculator text-primary',
+                                            'english': 'fas fa-language text-success',
+                                            'science': 'fas fa-flask text-warning',
+                                            'writing': 'fas fa-pen text-info',
+                                            'social_studies': 'fas fa-globe text-danger'
+                                        } %}
+                                        <i class="{{ subject_icons.get(session.subject, 'fas fa-book text-secondary') }} fa-lg me-2"></i>
+                                        <span class="fw-bold">{{ session.subject.replace('_', ' ').title() }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success fs-6">
+                                        {{ session.duration_minutes }} minutes
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">{{ session.start_time.strftime('%B %d, %Y') }}</div>
+                                        <small class="text-muted">
+                                            {{ session.start_time.strftime('%I:%M %p') }} - 
+                                            {{ session.end_time.strftime('%I:%M %p') }}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if session.notes %}
+                                        <div class="text-truncate" style="max-width: 200px;" title="{{ session.notes }}">
+                                            {{ session.notes }}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">No notes</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 bg-light">
+            <div class="card-body text-center py-4">
+                <h4 class="text-primary mb-3">
+                    <i class="fas fa-trophy me-2"></i>
+                    Fantastic! You've completed {{ sessions|length }} study session{{ 's' if sessions|length != 1 else '' }}!
+                </h4>
+                <p class="text-muted mb-0">You're building great study habits! Keep up the excellent work! 🌟📚</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-clock text-muted fa-5x mb-4"></i>
+                <h3 class="text-muted mb-3">No study sessions yet!</h3>
+                <p class="text-muted mb-4">Start your first study session to begin tracking your learning time!</p>
+                <button class="btn btn-primary btn-lg" onclick="showStudyModal()">
+                    <i class="fas fa-play me-2"></i>Start Your First Study Session
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Study Subject Modal -->
+<div class="modal fade" id="studyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-play-circle me-2"></i>
+                    Start Study Session
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="studyForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">What subject are you studying today?</label>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <input type="radio" class="btn-check" name="subject" id="maths" value="maths">
+                                <label class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center py-3" for="maths">
+                                    <i class="fas fa-calculator fa-2x mb-2"></i>
+                                    <span>Maths</span>
+                                </label>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="radio" class="btn-check" name="subject" id="english" value="english">
+                                <label class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center py-3" for="english">
+                                    <i class="fas fa-language fa-2x mb-2"></i>
+                                    <span>English</span>
+                                </label>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="radio" class="btn-check" name="subject" id="science" value="science">
+                                <label class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center py-3" for="science">
+                                    <i class="fas fa-flask fa-2x mb-2"></i>
+                                    <span>Science</span>
+                                </label>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="radio" class="btn-check" name="subject" id="writing" value="writing">
+                                <label class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center py-3" for="writing">
+                                    <i class="fas fa-pen fa-2x mb-2"></i>
+                                    <span>Writing</span>
+                                </label>
+                            </div>
+                            <div class="col-12">
+                                <input type="radio" class="btn-check" name="subject" id="social_studies" value="social_studies">
+                                <label class="btn btn-outline-danger w-100 h-100 d-flex flex-column align-items-center py-3" for="social_studies">
+                                    <i class="fas fa-globe fa-2x mb-2"></i>
+                                    <span>Social Studies</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="startStudy()">
+                    <i class="fas fa-play me-2"></i>Start Studying!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stop Study Modal -->
+<div class="modal fade" id="stopStudyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-stop-circle me-2"></i>
+                    Great Job Studying!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-trophy text-warning fa-3x mb-3"></i>
+                    <h5>You studied for <span id="study-duration"></span> minutes!</h5>
+                </div>
+                <form id="stopStudyForm">
+                    <div class="mb-3">
+                        <label for="study-notes" class="form-label fw-bold">What did you learn today? (Optional)</label>
+                        <textarea class="form-control" id="study-notes" name="notes" rows="3" placeholder="Tell us about what you studied..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-lg" onclick="finishStudy()">
+                    <i class="fas fa-check me-2"></i>Finish Session
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let timerInterval;
+
+{% if active_session %}
+// Update timer for active session
+function updateTimer() {
+    const startTime = new Date('{{ active_session.start_time.isoformat() }}Z');
+    const now = new Date();
+    const elapsed = Math.floor((now - startTime) / 1000);
+    
+    const hours = Math.floor(elapsed / 3600);
+    const minutes = Math.floor((elapsed % 3600) / 60);
+    const seconds = elapsed % 60;
+    
+    const display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timer-display').textContent = display;
+}
+
+// Start timer immediately and update every second
+updateTimer();
+timerInterval = setInterval(updateTimer, 1000);
+{% endif %}
+
+function showStudyModal() {
+    new bootstrap.Modal(document.getElementById('studyModal')).show();
+}
+
+function startStudy() {
+    const selectedSubject = document.querySelector('input[name="subject"]:checked');
+    if (!selectedSubject) {
+        alert('Please select a subject!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('subject', selectedSubject.value);
+    
+    fetch('/study/start', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function stopStudy() {
+    new bootstrap.Modal(document.getElementById('stopStudyModal')).show();
+}
+
+function finishStudy() {
+    const formData = new FormData();
+    const notes = document.getElementById('study-notes').value;
+    if (notes) {
+        formData.append('notes', notes);
+    }
+    
+    fetch('/study/stop', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('study-duration').textContent = data.duration;
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }
+    });
+}
+</script>
+{% endblock %}

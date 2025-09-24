@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Reading & Study Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 login-card">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-book-reader fa-4x text-primary"></i>
+                </div>
+                <h2 class="h3 mb-4 text-primary fw-bold">Welcome to Your Reading Tracker!</h2>
+                <p class="text-muted mb-4">Track your books and study time with your parent's help</p>
+                
+                {% if demo_mode %}
+                <!-- Demo Login Button -->
+                <div class="d-grid gap-2 mb-3">
+                    <button class="btn btn-success btn-lg" onclick="demoLogin()">
+                        <i class="fas fa-rocket me-2"></i>
+                        Try Demo Login
+                    </button>
+                </div>
+                
+                <div class="alert alert-info border-0" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            <strong>Demo Mode</strong><br>
+                            <small>This is a demonstration. Click above to explore the app!</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Demo version - no real login required
+                    </small>
+                </div>
+                
+                {% else %}
+                <!-- Google OAuth Login -->
+                <div id="g_id_onload"
+                     data-client_id="{{ config.GOOGLE_CLIENT_ID }}"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+                
+                <div class="mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Safe and secure login with Google
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <div class="row text-center">
+                <div class="col-4">
+                    <i class="fas fa-book fa-2x text-success mb-2"></i>
+                    <p class="small">Track Books</p>
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-stopwatch fa-2x text-warning mb-2"></i>
+                    <p class="small">Time Studies</p>
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                    <p class="small">See Progress</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if demo_mode %}
+        <div class="card bg-light border-0 mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary mb-3">
+                    <i class="fas fa-star me-1"></i>
+                    Demo Features Available:
+                </h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Add and view books</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Start/stop study timers</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Track different subjects</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Kid-friendly interface</li>
+                    <li class="mb-0"><i class="fas fa-check text-success me-2"></i>Progress tracking</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+{% if demo_mode %}
+function demoLogin() {
+    // Show loading state
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
+    btn.disabled = true;
+    
+    fetch('/demo-login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Success! Redirecting...';
+            btn.className = 'btn btn-success btn-lg';
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000);
+        } else {
+            alert('Demo login failed. Please try again.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Demo login failed. Please try again.');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+{% else %}
+// Google OAuth handler for production mode
+function handleCredentialResponse(response) {
+    fetch('/auth/google', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            token: response.credential
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/dashboard';
+        } else {
+            alert('Login failed. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Login failed. Please try again.');
+    });
+}
+{% endif %}
+</script>
+{% endblock %}
