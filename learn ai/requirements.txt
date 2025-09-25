@@ -1,0 +1,28 @@
+# Core ADK dependencies
+google-cloud-aiplatform>=1.38.0
+google-cloud-functions>=1.13.0
+google-auth>=2.17.0
+
+# Development tools
+jupyter>=1.0.0
+ipykernel>=6.19.0
+python-dotenv>=1.0.0
+
+# Data science and ML utilities
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.6.0
+seaborn>=0.12.0
+
+# HTTP and API utilities
+requests>=2.28.0
+httpx>=0.24.0
+
+# Testing
+pytest>=7.2.0
+pytest-asyncio>=0.21.0
+
+# Code quality
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
