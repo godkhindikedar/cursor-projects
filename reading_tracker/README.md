@@ -1,5 +1,22 @@
 # 📚 Reading & Study Tracker
 
+## 💝 The Story Behind This Project
+
+This is my first attempt at **vibe coding** - coding for the pure joy of creating something meaningful! 🎯
+
+**The Inspiration**: My son's reading journey at school sparked this entire project. His school uses an app where kids log their reading times, track books they've read, and share their reading streaks with friends. Watching him get excited about reading and competing with his classmates in the most wholesome way possible made me realize how powerful these simple tracking tools can be.
+
+**The Mission**: I wanted to recreate that magic - a place where kids can:
+1. **Track their reading adventures** 📖 - Log books with their own thoughts and summaries
+2. **Monitor study time** ⏰ - Because learning happens across all subjects, not just reading
+3. **Build healthy habits** 🌟 - Making education feel like an achievement game
+
+**The Learning Journey**: As I dive into this project, I'm also learning AI development using Cursor. This repository represents not just a functional app, but my exploration into modern development workflows and AI-assisted coding. Every commit is a step forward in both building something useful for kids and mastering new technologies.
+
+---
+
+## 🎯 What This App Does
+
 A kid-friendly web application to track reading books and study time across different subjects. Built with Python Flask, MySQL, and designed with a colorful, engaging interface perfect for children.
 
 ## ✨ Features
