@@ -8,3 +8,8 @@ google-auth-oauthlib==1.1.0
 google-auth-httplib2==0.1.1
 requests==2.31.0
 cryptography==41.0.7
+# Azure SQL support
+pyodbc==5.0.1
+# For Azure App Service
+gunicorn==21.2.0
+google-cloud-logging==3.8.0

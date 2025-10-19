@@ -1,0 +1,31 @@
+{
+    "name": "Reading & Study Tracker",
+    "short_name": "ReadTracker",
+    "description": "Track your reading progress and study sessions",
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#4a90e2",
+    "background_color": "#f5f7fa",
+    "display": "standalone",
+    "start_url": "/dashboard"
+}

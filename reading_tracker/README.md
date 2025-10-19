@@ -34,8 +34,8 @@ A kid-friendly web application to track reading books and study time across diff
 ### Prerequisites
 
 - Python 3.8+
-- MySQL 8.0+
-- Google Cloud Console account (for OAuth)
+- SQLite (included with Python) or MySQL 8.0+ (optional)
+- Google Cloud Console account (for OAuth - optional for demo)
 
 ### 1. Installation
 
@@ -47,14 +47,20 @@ cd reading_tracker
 pip install -r requirements.txt
 ```
 
-### 2. Database Setup
+### 2. Database Setup (Automatic)
+
+The application now uses SQLite by default for easy setup:
 
 ```bash
-# Login to MySQL
-mysql -u root -p
+# Initialize fresh database with correct schema
+python init_db.py
+```
 
-# Run the database schema
+**Alternative: MySQL Setup**
+```bash
+# For production with MySQL
 mysql -u root -p < database.sql
+# Update config.py to use MySQL connection string
 ```
 
 ### 3. Google OAuth Setup
@@ -67,23 +73,27 @@ mysql -u root -p < database.sql
    - `http://localhost:5000`
    - `http://127.0.0.1:5000`
 
-### 4. Environment Configuration
+### 3. Configuration (Optional)
+
+The application works out-of-the-box with SQLite! For production or Google OAuth:
 
 Create a `.env` file in the project root:
-
 ```env
 SECRET_KEY=your-super-secret-key-here
-DATABASE_URL=mysql+pymysql://username:password@localhost/reading_tracker
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+DATABASE_URL=sqlite:///reading_tracker.db  # (default)
+# DATABASE_URL=mysql+pymysql://username:password@localhost/reading_tracker  # (optional)
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com  # (optional)
 ```
 
-### 5. Run the Application
+### 4. Run the Application
 
 ```bash
 python app.py
 ```
 
-Visit `http://localhost:5000` in your browser!
+🎉 Visit `http://localhost:5000` in your browser!
+
+**Note**: The application is now fully functional with SQLite and includes the latest database schema with book tracking for reading sessions.
 
 ## 🎨 Screenshots
 
@@ -115,9 +125,9 @@ The application is fully responsive and works great on:
 
 ### Tech Stack
 - **Backend**: Python Flask
-- **Database**: MySQL with SQLAlchemy ORM
+- **Database**: SQLite (default) or MySQL with SQLAlchemy ORM
 - **Frontend**: Bootstrap 5, HTML5, CSS3, JavaScript
-- **Authentication**: Google OAuth 2.0
+- **Authentication**: Google OAuth 2.0 (optional)
 - **Icons**: Font Awesome
 - **Styling**: Custom CSS with kid-friendly animations
 
@@ -138,9 +148,11 @@ The application is fully responsive and works great on:
 ```
 reading_tracker/
 ├── app.py                 # Main Flask application
+├── init_db.py            # Database initialization script
 ├── config.py             # Configuration settings
 ├── requirements.txt      # Python dependencies
-├── database.sql          # MySQL schema
+├── database.sql          # MySQL schema (reference)
+├── reading_tracker.db    # SQLite database (auto-created)
 ├── static/
 │   ├── css/
 │   │   └── style.css    # Kid-friendly styles
@@ -151,7 +163,8 @@ reading_tracker/
     ├── login.html       # Login page
     ├── dashboard.html   # Main dashboard
     ├── books.html       # Book management
-    └── study_sessions.html # Study tracking
+    ├── study_sessions.html # Study tracking
+    └── leaderboard.html   # Progress leaderboard
 ```
 
 ### Adding New Features

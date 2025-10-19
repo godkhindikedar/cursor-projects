@@ -6,7 +6,11 @@ This repository contains two main learning and development projects focused on p
 
 ## 📖 Section 1: Reading & Study Tracker
 
+**🔗 [View Full Documentation](./reading_tracker/README.md)**
+
 A kid-friendly web application designed to help children track their reading books and study time across different subjects. Perfect for parents who want to monitor and encourage their child's learning habits.
+
+**✅ Status**: Fully functional with SQLite database and working Flask application!
 
 ### ✨ Features
 - **📚 Book Tracking**: Log books with titles, authors, and personal summaries
@@ -28,25 +32,32 @@ A kid-friendly web application designed to help children track their reading boo
 ```bash
 cd reading_tracker
 pip install -r requirements.txt
-python demo_run.py  # For demo mode with sample data
+python init_db.py    # Initialize SQLite database
+python app.py        # Start the application
 ```
 
-Then visit `http://localhost:5000` and click "Try Demo Login" to explore!
+Then visit `http://localhost:5000` in your browser to start tracking!
 
 ### 📁 Project Structure
 ```
 reading_tracker/
-├── app.py & app_demo.py    # Flask applications (production & demo)
-├── demo_run.py             # Easy demo startup script
-├── database.sql            # MySQL schema with sample data
-├── static/                 # CSS styles and JavaScript
-├── templates/              # HTML templates
-└── README.md              # Detailed project documentation
+├── app.py                  # Main Flask application
+├── init_db.py             # Database initialization script
+├── config.py              # Application configuration
+├── database.sql           # MySQL schema (reference)
+├── reading_tracker.db     # SQLite database (auto-created)
+├── static/                # CSS styles and JavaScript
+├── templates/             # HTML templates
+└── README.md             # 📖 Full Documentation & Setup Guide
 ```
+
+**🎯 [Get Started with Reading Tracker →](./reading_tracker/)**
 
 ---
 
 ## 🤖 Section 2: AI Learning & Development
+
+**🔗 [View Full Documentation](./learn%20ai/README.md)**
 
 A comprehensive learning journey into Agentic AI, featuring practical examples, foundational concepts, and hands-on projects to build real-world AI applications.
 
@@ -87,6 +98,8 @@ pip install -r requirements.txt
 python setup/test_environment.py  # Verify setup
 python examples/01_hello_agent.py  # Run first example
 ```
+
+**🤖 [Start Learning AI →](./learn%20ai/)**
 
 ---
 

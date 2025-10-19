@@ -65,10 +65,11 @@ def main():
                 from datetime import datetime, timedelta
                 import random
                 
-                subjects = ['maths', 'english', 'science', 'writing', 'social_studies']
+                subjects = ['maths', 'english', 'reading', 'science', 'writing', 'social_studies']
                 session_notes = {
                     'maths': "Practiced multiplication tables and did some word problems. Getting faster!",
                     'english': "Read a chapter and answered comprehension questions. Love this book!",
+                    'reading': "Finished reading a whole chapter today! The characters are so interesting! 📚",
                     'science': "Learned about the solar system. Jupiter is HUGE! 🪐",
                     'writing': "Wrote a story about my pet hamster's adventures.",
                     'social_studies': "Studied different countries and their flags. So many colors!"

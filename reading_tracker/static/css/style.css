@@ -6,10 +6,12 @@
     --warning-color: #f1c40f;
     --danger-color: #e74c3c;
     --info-color: #3498db;
+    --purple-color: #6f42c1;
     --light-bg: #f8f9fa;
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --gradient-success: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
     --gradient-warning: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    --gradient-purple: linear-gradient(135deg, #a855f7 0%, #6f42c1 100%);
 }
 
 body {
@@ -99,9 +101,61 @@ body {
     transform: scale(1.05);
 }
 
+.btn-check:checked + .btn-outline-purple {
+    background: var(--gradient-purple);
+    border-color: var(--purple-color);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+}
+
+.btn-outline-purple {
+    border-color: var(--purple-color);
+    color: var(--purple-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-outline-purple:hover {
+    background: var(--gradient-purple);
+    border-color: var(--purple-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(111, 66, 193, 0.4);
+}
+
+.btn-outline-purple::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-purple);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.btn-outline-purple:hover::before {
+    left: 0;
+}
+
 .btn-check:checked + .btn-outline-warning {
     background: var(--warning-color);
     border-color: var(--warning-color);
+    color: #333;
+    transform: scale(1.05);
+}
+
+.btn-check:checked + .btn-outline-info {
+    background: var(--info-color);
+    border-color: var(--info-color);
+    transform: scale(1.05);
+}
+
+.btn-check:checked + .btn-outline-danger {
+    background: var(--danger-color);
+    border-color: var(--danger-color);
     transform: scale(1.05);
 }
 
@@ -265,6 +319,46 @@ body::before {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+
+/* Smooth timer display - NO FLICKERING! */
+#timer-display {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+    /* Prevent text selection and layout shifts */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Ensure consistent width to prevent layout shifts */
+    min-width: 120px;
+    text-align: center;
+    display: inline-block;
+}
+
+#timer-display.animate-success {
+    transform: scale(1.05);
+    text-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+    color: #28a745 !important;
+}
+
+/* Timer pulse animation for engagement */
+@keyframes timerPulse {
+    0% { 
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+    }
+    50% { 
+        transform: scale(1.02);
+        text-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+    }
+    100% { 
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+    }
 }
 
 /* Footer */

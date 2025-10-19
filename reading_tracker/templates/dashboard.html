@@ -65,6 +65,18 @@
             </div>
         </div>
     </div>
+    
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="card h-100 border-0 shadow-sm action-card" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+            <div class="card-body text-center text-white">
+                <i class="fas fa-trophy fa-3x mb-3"></i>
+                <h5>Leaderboard</h5>
+                <a href="{{ url_for('leaderboard') }}" class="btn btn-light btn-sm fw-bold">
+                    <i class="fas fa-star me-1"></i>View Rankings
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Active Study Session -->
@@ -78,7 +90,7 @@
                         <i class="fas fa-play-circle me-2"></i>
                         Currently Studying: {{ active_session.subject.replace('_', ' ').title() }}
                     </h4>
-                    <p class="mb-0">Started at {{ active_session.start_time.strftime('%I:%M %p') }}</p>
+                    <p class="mb-0">Started at <span data-utc-time="{{ active_session.start_time.isoformat() }}Z" data-time-format="time">{{ active_session.start_time.strftime('%I:%M %p') }}</span></p>
                     <div class="mt-2">
                         <span class="badge bg-success fs-6" id="timer-display">00:00:00</span>
                     </div>
@@ -116,7 +128,7 @@
                             {% if book.author %}
                             <p class="mb-1 small text-muted">by {{ book.author }}</p>
                             {% endif %}
-                            <p class="mb-0 small">{{ book.date_read.strftime('%B %d, %Y') }}</p>
+                            <p class="mb-0 small" data-utc-time="{{ book.date_read.isoformat() }}Z" data-time-format="date">{{ book.date_read.strftime('%B %d, %Y') }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -154,7 +166,7 @@
                                 <i class="fas fa-clock me-1"></i>
                                 {{ session.duration_minutes }} minutes
                             </p>
-                            <p class="mb-0 small text-muted">{{ session.start_time.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                            <p class="mb-0 small text-muted recent-session-time" data-utc="{{ session.start_time.isoformat() }}Z">{{ session.start_time.strftime('%B %d, %Y at %I:%M %p') }} CST</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -203,6 +215,13 @@
                                 </label>
                             </div>
                             <div class="col-6 mb-3">
+                                <input type="radio" class="btn-check" name="subject" id="reading" value="reading">
+                                <label class="btn btn-outline-purple w-100 h-100 d-flex flex-column align-items-center py-3" for="reading">
+                                    <i class="fas fa-book-open fa-2x mb-2"></i>
+                                    <span>Reading</span>
+                                </label>
+                            </div>
+                            <div class="col-6 mb-3">
                                 <input type="radio" class="btn-check" name="subject" id="science" value="science">
                                 <label class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center py-3" for="science">
                                     <i class="fas fa-flask fa-2x mb-2"></i>
@@ -223,6 +242,24 @@
                                     <span>Social Studies</span>
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Book Selection for Reading Sessions -->
+                    <div class="mb-3" id="bookSelection" style="display: none;">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-book me-2 text-purple"></i>
+                            Which book are you reading? (Optional)
+                        </label>
+                        <select class="form-select" name="book_id" id="bookSelect">
+                            <option value="">No specific book</option>
+                            {% for book in user_books %}
+                            <option value="{{ book.id }}">{{ book.title }}{% if book.author %} by {{ book.author }}{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Don't see your book? <a href="{{ url_for('books') }}" target="_blank">Add it to your library first!</a>
                         </div>
                     </div>
                 </form>
@@ -275,27 +312,31 @@
 let timerInterval;
 
 {% if active_session %}
-// Update timer for active session
-function updateTimer() {
+// Initialize the timer with the active session start time
+document.addEventListener('DOMContentLoaded', function() {
     const startTime = new Date('{{ active_session.start_time.isoformat() }}Z');
-    const now = new Date();
-    const elapsed = Math.floor((now - startTime) / 1000);
-    
-    const hours = Math.floor(elapsed / 3600);
-    const minutes = Math.floor((elapsed % 3600) / 60);
-    const seconds = elapsed % 60;
-    
-    const display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    document.getElementById('timer-display').textContent = display;
-}
-
-// Start timer immediately and update every second
-updateTimer();
-timerInterval = setInterval(updateTimer, 1000);
+    if (window.StudyTimer && window.StudyTimer.timer) {
+        window.StudyTimer.timer.start(startTime);
+    }
+});
 {% endif %}
 
 function showStudyModal() {
     new bootstrap.Modal(document.getElementById('studyModal')).show();
+    
+    // Add event listeners for subject selection
+    const subjectRadios = document.querySelectorAll('input[name="subject"]');
+    subjectRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const bookSelection = document.getElementById('bookSelection');
+            if (this.value === 'reading') {
+                bookSelection.style.display = 'block';
+            } else {
+                bookSelection.style.display = 'none';
+                document.getElementById('bookSelect').value = '';
+            }
+        });
+    });
 }
 
 function startStudy() {
@@ -307,6 +348,14 @@ function startStudy() {
     
     const formData = new FormData();
     formData.append('subject', selectedSubject.value);
+    
+    // Add book selection if reading is selected
+    if (selectedSubject.value === 'reading') {
+        const bookSelect = document.getElementById('bookSelect');
+        if (bookSelect.value) {
+            formData.append('book_id', bookSelect.value);
+        }
+    }
     
     fetch('/study/start', {
         method: 'POST',

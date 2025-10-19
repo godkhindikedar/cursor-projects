@@ -13,6 +13,9 @@
                 <h2 class="h3 mb-4 text-primary fw-bold">Welcome to Your Reading Tracker!</h2>
                 <p class="text-muted mb-4">Track your books and study time with your parent's help</p>
                 
+                <!-- Approval Status Message -->
+                <div id="approval-message" class="alert d-none" role="alert"></div>
+                
                 <div id="g_id_onload"
                      data-client_id="{{ config.GOOGLE_CLIENT_ID }}"
                      data-context="signin"
@@ -55,6 +58,25 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Demo Section -->
+        <div class="text-center mt-4">
+            <div class="card bg-light border-0">
+                <div class="card-body py-3">
+                    <h6 class="text-muted mb-2">
+                        <i class="fas fa-rocket me-1"></i>
+                        Want to try it first?
+                    </h6>
+                    <button class="btn btn-outline-primary btn-sm" onclick="demoLogin()">
+                        <i class="fas fa-play me-1"></i>
+                        Try Demo Version
+                    </button>
+                    <div class="mt-2">
+                        <small class="text-muted">No login required • Explore all features</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -75,13 +97,70 @@ function handleCredentialResponse(response) {
     .then(data => {
         if (data.success) {
             window.location.href = '/dashboard';
+        } else if (data.pending_approval) {
+            // Show pending approval message
+            const messageDiv = document.getElementById('approval-message');
+            messageDiv.className = 'alert alert-warning';
+            messageDiv.innerHTML = `
+                <h6><i class="fas fa-clock me-2"></i>Account Pending Approval</h6>
+                <p class="mb-0">${data.message}</p>
+            `;
+            messageDiv.classList.remove('d-none');
+            
+            // Hide the Google login button
+            document.querySelector('.g_id_signin').style.display = 'none';
         } else {
-            alert('Login failed. Please try again.');
+            // Show error message
+            const messageDiv = document.getElementById('approval-message');
+            messageDiv.className = 'alert alert-danger';
+            messageDiv.innerHTML = `
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Login Failed</h6>
+                <p class="mb-0">${data.error || 'Please try again.'}</p>
+            `;
+            messageDiv.classList.remove('d-none');
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert('Login failed. Please try again.');
+    });
+}
+
+function demoLogin() {
+    // Show loading state
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Starting Demo...';
+    btn.disabled = true;
+    
+    fetch('/demo-login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Success! Loading...';
+            btn.className = 'btn btn-success btn-sm';
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000);
+        } else {
+            alert('Demo login failed. Please try again.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Demo login failed. Please try again.');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     });
 }
 </script>

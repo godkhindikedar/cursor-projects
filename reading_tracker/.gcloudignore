@@ -1,0 +1,98 @@
+# This file specifies files that are intentionally untracked by gcloud
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.coverage
+.pytest_cache/
+.mypy_cache/
+venv/
+env/
+.venv/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vs/
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Local development files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.log
+*.pid
+
+# Database files (we'll create fresh in production)
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Documentation and examples
+*.md
+docs/
+examples/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test files
+test/
+tests/
+*_test.py
+test_*.py
+
+# Pipeline configuration files with sensitive data
+Pipeline/secrets/*.env
+Pipeline/config/*.env
+Pipeline/scripts/*.log
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local configuration
+config_local.py
+local_settings.py
+
+# Backup files
+*.bak
+*.backup
+
+# Azure specific files (since we're deploying to GCP)
+azure_setup.md
+web.config
+deploy.cmd
+
+# Old or demo files
+*_demo.py
+demo_*.py
+main.py
+run.py
+startup.py

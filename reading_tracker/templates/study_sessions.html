@@ -31,8 +31,11 @@
                         <h3 class="mb-2">
                             <i class="fas fa-play-circle me-2"></i>
                             Currently Studying: {{ active_session.subject.replace('_', ' ').title() }}
+                            {% if active_session.book %}
+                            <br><small class="opacity-75">📖 Reading: {{ active_session.book.title }}</small>
+                            {% endif %}
                         </h3>
-                        <p class="mb-0 opacity-75">Started at {{ active_session.start_time.strftime('%I:%M %p') }}</p>
+                        <p class="mb-0 opacity-75">Started at <span data-utc-time="{{ active_session.start_time.isoformat() }}Z" data-time-format="time">{{ active_session.start_time.strftime('%I:%M %p') }}</span></p>
                         <div class="mt-3">
                             <span class="badge bg-success fs-5 px-3 py-2" id="timer-display">00:00:00</span>
                         </div>
@@ -129,12 +132,18 @@
                                         {% set subject_icons = {
                                             'maths': 'fas fa-calculator text-primary',
                                             'english': 'fas fa-language text-success',
+                                            'reading': 'fas fa-book-open text-purple',
                                             'science': 'fas fa-flask text-warning',
                                             'writing': 'fas fa-pen text-info',
                                             'social_studies': 'fas fa-globe text-danger'
                                         } %}
                                         <i class="{{ subject_icons.get(session.subject, 'fas fa-book text-secondary') }} fa-lg me-2"></i>
-                                        <span class="fw-bold">{{ session.subject.replace('_', ' ').title() }}</span>
+                                        <span class="fw-bold">
+                                            {{ session.subject.replace('_', ' ').title() }}
+                                            {% if session.book %}
+                                            <br><small class="text-purple">📖 {{ session.book.title }}</small>
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </td>
                                 <td>
@@ -144,10 +153,10 @@
                                 </td>
                                 <td>
                                     <div>
-                                        <div class="fw-bold">{{ session.start_time.strftime('%B %d, %Y') }}</div>
+                                        <div class="fw-bold" data-utc-time="{{ session.start_time.isoformat() }}Z" data-time-format="date">{{ session.start_time.strftime('%B %d, %Y') }}</div>
                                         <small class="text-muted">
-                                            {{ session.start_time.strftime('%I:%M %p') }} - 
-                                            {{ session.end_time.strftime('%I:%M %p') }}
+                                            <span data-utc-time="{{ session.start_time.isoformat() }}Z" data-time-format="time">{{ session.start_time.strftime('%I:%M %p') }}</span> - 
+                                            <span data-utc-time="{{ session.end_time.isoformat() }}Z" data-time-format="time">{{ session.end_time.strftime('%I:%M %p') }}</span>
                                         </small>
                                     </div>
                                 </td>
@@ -232,6 +241,13 @@
                                 </label>
                             </div>
                             <div class="col-6 mb-3">
+                                <input type="radio" class="btn-check" name="subject" id="reading" value="reading">
+                                <label class="btn btn-outline-purple w-100 h-100 d-flex flex-column align-items-center py-3" for="reading">
+                                    <i class="fas fa-book-open fa-2x mb-2"></i>
+                                    <span>Reading</span>
+                                </label>
+                            </div>
+                            <div class="col-6 mb-3">
                                 <input type="radio" class="btn-check" name="subject" id="science" value="science">
                                 <label class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center py-3" for="science">
                                     <i class="fas fa-flask fa-2x mb-2"></i>
@@ -252,6 +268,24 @@
                                     <span>Social Studies</span>
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Book Selection for Reading Sessions -->
+                    <div class="mb-3" id="bookSelection" style="display: none;">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-book me-2 text-purple"></i>
+                            Which book are you reading? (Optional)
+                        </label>
+                        <select class="form-select" name="book_id" id="bookSelect">
+                            <option value="">No specific book</option>
+                            {% for book in user_books %}
+                            <option value="{{ book.id }}">{{ book.title }}{% if book.author %} by {{ book.author }}{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Don't see your book? <a href="{{ url_for('books') }}" target="_blank">Add it to your library first!</a>
                         </div>
                     </div>
                 </form>
@@ -304,27 +338,31 @@
 let timerInterval;
 
 {% if active_session %}
-// Update timer for active session
-function updateTimer() {
+// Initialize the timer with the active session start time
+document.addEventListener('DOMContentLoaded', function() {
     const startTime = new Date('{{ active_session.start_time.isoformat() }}Z');
-    const now = new Date();
-    const elapsed = Math.floor((now - startTime) / 1000);
-    
-    const hours = Math.floor(elapsed / 3600);
-    const minutes = Math.floor((elapsed % 3600) / 60);
-    const seconds = elapsed % 60;
-    
-    const display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    document.getElementById('timer-display').textContent = display;
-}
-
-// Start timer immediately and update every second
-updateTimer();
-timerInterval = setInterval(updateTimer, 1000);
+    if (window.StudyTimer && window.StudyTimer.timer) {
+        window.StudyTimer.timer.start(startTime);
+    }
+});
 {% endif %}
 
 function showStudyModal() {
     new bootstrap.Modal(document.getElementById('studyModal')).show();
+    
+    // Add event listeners for subject selection
+    const subjectRadios = document.querySelectorAll('input[name="subject"]');
+    subjectRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const bookSelection = document.getElementById('bookSelection');
+            if (this.value === 'reading') {
+                bookSelection.style.display = 'block';
+            } else {
+                bookSelection.style.display = 'none';
+                document.getElementById('bookSelect').value = '';
+            }
+        });
+    });
 }
 
 function startStudy() {
@@ -336,6 +374,14 @@ function startStudy() {
     
     const formData = new FormData();
     formData.append('subject', selectedSubject.value);
+    
+    // Add book selection if reading is selected
+    if (selectedSubject.value === 'reading') {
+        const bookSelect = document.getElementById('bookSelect');
+        if (bookSelect.value) {
+            formData.append('book_id', bookSelect.value);
+        }
+    }
     
     fetch('/study/start', {
         method: 'POST',

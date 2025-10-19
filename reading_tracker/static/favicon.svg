@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Orange background circle -->
+  <circle cx="50" cy="50" r="45" fill="#f39c12" stroke="#e67e22" stroke-width="4"/>
+  
+  <!-- Open book -->
+  <g transform="translate(25, 35)">
+    <!-- Book pages -->
+    <path d="M5 15 L25 12 L45 15 L45 35 L25 32 L5 35 Z" fill="#ecf0f1" stroke="#34495e" stroke-width="1.5"/>
+    
+    <!-- Book binding -->
+    <line x1="25" y1="12" x2="25" y2="32" stroke="#34495e" stroke-width="2"/>
+    
+    <!-- Page lines -->
+    <line x1="8" y1="18" x2="22" y2="17" stroke="#7f8c8d" stroke-width="0.8"/>
+    <line x1="8" y1="22" x2="22" y2="21" stroke="#7f8c8d" stroke-width="0.8"/>
+    <line x1="8" y1="26" x2="22" y2="25" stroke="#7f8c8d" stroke-width="0.8"/>
+    <line x1="28" y1="17" x2="42" y2="18" stroke="#7f8c8d" stroke-width="0.8"/>
+    <line x1="28" y1="21" x2="42" y2="22" stroke="#7f8c8d" stroke-width="0.8"/>
+    <line x1="28" y1="25" x2="42" y2="26" stroke="#7f8c8d" stroke-width="0.8"/>
+  </g>
+  
+  <!-- Small sparkles for reading magic -->
+  <circle cx="20" cy="25" r="2" fill="#f1c40f"/>
+  <circle cx="75" cy="30" r="1.5" fill="#f1c40f"/>
+  <circle cx="80" cy="70" r="2" fill="#f1c40f"/>
+</svg>

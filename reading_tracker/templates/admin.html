@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Reading & Study Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="welcome-header mb-4">
+            <h1 class="display-5 fw-bold text-danger">
+                <i class="fas fa-shield-alt me-2"></i>
+                Admin Dashboard
+            </h1>
+            <p class="lead text-muted">Manage user access and approvals</p>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Approvals -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Pending User Approvals
+                    {% if pending_users %}
+                        <span class="badge bg-danger ms-2">{{ pending_users|length }}</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if pending_users %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Requested</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in pending_users %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-user-clock text-warning me-2"></i>
+                                        {{ user.name }}
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <span class="text-muted small">
+                                            {{ user.approval_requested_at.strftime('%B %d, %Y at %I:%M %p') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form method="POST" class="d-inline">
+                                            <button type="submit" 
+                                                    formaction="{{ url_for('approve_user', user_id=user.id) }}"
+                                                    class="btn btn-success btn-sm me-2"
+                                                    onclick="return confirm('Approve {{ user.name }}?')">
+                                                <i class="fas fa-check me-1"></i>Approve
+                                            </button>
+                                            <button type="submit" 
+                                                    formaction="{{ url_for('deny_user', user_id=user.id) }}"
+                                                    class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Deny and remove {{ user.name }}? This cannot be undone.')">
+                                                <i class="fas fa-times me-1"></i>Deny
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                        <p class="text-muted">No pending approvals! All users are up to date.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Users Management -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    All Users Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in all_users %}
+                            <tr>
+                                <td>
+                                    {% if user.is_admin %}
+                                        <i class="fas fa-crown text-warning me-2" title="Admin"></i>
+                                    {% elif user.is_approved %}
+                                        <i class="fas fa-user text-success me-2" title="Approved"></i>
+                                    {% else %}
+                                        <i class="fas fa-user-clock text-warning me-2" title="Pending"></i>
+                                    {% endif %}
+                                    {{ user.name }}
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_admin %}
+                                        <span class="badge bg-danger">Admin</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">User</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-muted small">
+                                        {{ user.created_at.strftime('%m/%d/%Y') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if user.id != current_user.id %}
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            {% if not user.is_approved %}
+                                                <form method="POST" class="d-inline">
+                                                    <button type="submit" 
+                                                            formaction="{{ url_for('approve_user', user_id=user.id) }}"
+                                                            class="btn btn-outline-success btn-sm"
+                                                            title="Approve User">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            
+                                            <form method="POST" class="d-inline">
+                                                <button type="submit" 
+                                                        formaction="{{ url_for('toggle_admin', user_id=user.id) }}"
+                                                        class="btn btn-outline-{{ 'warning' if user.is_admin else 'primary' }} btn-sm"
+                                                        onclick="return confirm('{{ 'Remove' if user.is_admin else 'Grant' }} admin privileges for {{ user.name }}?')"
+                                                        title="{{ 'Remove Admin' if user.is_admin else 'Make Admin' }}">
+                                                    <i class="fas fa-{{ 'user-minus' if user.is_admin else 'user-shield' }}"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <form method="POST" class="d-inline">
+                                                <button type="submit" 
+                                                        formaction="{{ url_for('deny_user', user_id=user.id) }}"
+                                                        class="btn btn-outline-danger btn-sm"
+                                                        onclick="return confirm('Remove {{ user.name }}? This cannot be undone.')"
+                                                        title="Remove User">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {% else %}
+                                        <span class="badge bg-info">You</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Admin Tips:</h6>
+            <ul class="mb-0">
+                <li><strong>Approve:</strong> Allow user access to the reading tracker</li>
+                <li><strong>Deny:</strong> Remove user permanently (they can re-register)</li>
+                <li><strong>Make Admin:</strong> Grant administrative privileges</li>
+                <li><strong>Remove Admin:</strong> Revoke administrative privileges (cannot remove from yourself)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Reading & Study Tracker{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold text-primary mb-2">
+                <i class="fas fa-trophy text-warning me-2"></i>
+                Study Champions Leaderboard
+                <i class="fas fa-medal text-success ms-2"></i>
+            </h1>
+            <p class="lead text-muted">See who's been studying the most! Keep learning to climb the ranks! 📚✨</p>
+        </div>
+    </div>
+</div>
+
+<!-- Top 3 Champions -->
+{% if leaderboard|length >= 1 %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+            <div class="card-body text-center py-5">
+                <h2 class="display-6 fw-bold text-white mb-4">
+                    <i class="fas fa-crown fa-2x text-yellow-300 me-2"></i>
+                    Top Study Champions
+                    <i class="fas fa-star fa-2x text-yellow-300 ms-2"></i>
+                </h2>
+                
+                <div class="row justify-content-center">
+                    <!-- 2nd Place -->
+                    {% if leaderboard|length >= 2 %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-light border-0 h-100" style="transform: scale(0.9);">
+                            <div class="card-body text-center">
+                                <div class="position-relative mb-3">
+                                    <i class="fas fa-medal fa-4x text-secondary"></i>
+                                    <span class="position-absolute top-0 start-50 translate-middle badge bg-secondary fs-6">2nd</span>
+                                </div>
+                                <h5 class="fw-bold">{{ leaderboard[1].name }}</h5>
+                                <p class="text-muted mb-2">{{ leaderboard[1].total_minutes }} minutes</p>
+                                <div class="badge bg-secondary">{{ "%.1f"|format(leaderboard[1].total_minutes / 60) }} hours</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 1st Place - THE CHAMPION! -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); transform: scale(1.1);">
+                            <div class="card-body text-center text-white">
+                                <div class="position-relative mb-3">
+                                    <i class="fas fa-trophy fa-5x text-yellow-300"></i>
+                                    <span class="position-absolute top-0 start-50 translate-middle">
+                                        <i class="fas fa-star fa-2x text-white"></i>
+                                    </span>
+                                </div>
+                                <h4 class="fw-bold">🏆 {{ leaderboard[0].name }} 🏆</h4>
+                                <p class="mb-2 fs-5">{{ leaderboard[0].total_minutes }} minutes</p>
+                                <div class="badge bg-white text-warning fs-6">👑 {{ "%.1f"|format(leaderboard[0].total_minutes / 60) }} hours 👑</div>
+                                <div class="mt-2">
+                                    <small class="text-yellow-200">🌟 Study Champion! 🌟</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 3rd Place -->
+                    {% if leaderboard|length >= 3 %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-light border-0 h-100" style="transform: scale(0.9);">
+                            <div class="card-body text-center">
+                                <div class="position-relative mb-3">
+                                    <i class="fas fa-medal fa-4x text-warning"></i>
+                                    <span class="position-absolute top-0 start-50 translate-middle badge bg-warning text-dark fs-6">3rd</span>
+                                </div>
+                                <h5 class="fw-bold">{{ leaderboard[2].name }}</h5>
+                                <p class="text-muted mb-2">{{ leaderboard[2].total_minutes }} minutes</p>
+                                <div class="badge bg-warning text-dark">{{ "%.1f"|format(leaderboard[2].total_minutes / 60) }} hours</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Your Stats -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-lg h-100">
+            <div class="card-body">
+                <h4 class="card-title text-primary mb-4">
+                    <i class="fas fa-user-circle me-2"></i>Your Stats
+                </h4>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <div class="display-6 fw-bold text-success">{{ current_user_rank }}</div>
+                            <small class="text-muted">Your Rank</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <div class="display-6 fw-bold text-info">{{ total_users }}</div>
+                            <small class="text-muted">Total Students</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Subject Breakdown -->
+                {% if current_user_subjects %}
+                <h6 class="text-muted mb-3">Your Subject Breakdown:</h6>
+                {% for subject in current_user_subjects %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-primary">{{ subject.subject.replace('_', ' ').title() }}</span>
+                    <span class="fw-bold">{{ subject.minutes }} min</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Today's Activity -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-lg h-100">
+            <div class="card-body">
+                <h4 class="card-title text-success mb-4">
+                    <i class="fas fa-calendar-day me-2"></i>Today's Study Heroes
+                </h4>
+                {% if today_sessions %}
+                    {% for session in today_sessions %}
+                    <div class="d-flex align-items-center mb-3 p-2 bg-light rounded">
+                        <div class="me-3">
+                            {% if session.subject == 'reading' %}
+                                <i class="fas fa-book-open text-purple"></i>
+                            {% elif session.subject == 'maths' %}
+                                <i class="fas fa-calculator text-primary"></i>
+                            {% elif session.subject == 'science' %}
+                                <i class="fas fa-flask text-warning"></i>
+                            {% elif session.subject == 'writing' %}
+                                <i class="fas fa-pen text-info"></i>
+                            {% elif session.subject == 'english' %}
+                                <i class="fas fa-language text-success"></i>
+                            {% else %}
+                                <i class="fas fa-globe text-danger"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">{{ session.name }}</div>
+                            <small class="text-muted">{{ session.subject.replace('_', ' ').title() }} • {{ session.duration_minutes }} min</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No study sessions today yet. Be the first! 🚀</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Full Leaderboard -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-list-ol me-2"></i>Complete Rankings
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Student</th>
+                                <th>Total Minutes</th>
+                                <th>Total Hours</th>
+                                <th>Badge</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in leaderboard %}
+                            <tr class="{% if user.id == current_user.id %}table-warning{% endif %}">
+                                <td class="fw-bold">
+                                    {% if loop.index == 1 %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-star me-1"></i>#{{ loop.index }}
+                                        </span>
+                                    {% elif loop.index <= 3 %}
+                                        <span class="badge bg-secondary">#{{ loop.index }}</span>
+                                    {% else %}
+                                        <span class="text-muted">#{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if loop.index == 1 %}
+                                            <i class="fas fa-crown text-warning me-2"></i>
+                                        {% endif %}
+                                        <strong>{{ user.name }}</strong>
+                                        {% if user.id == current_user.id %}
+                                            <span class="badge bg-info ms-2">You</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="fw-bold">{{ user.total_minutes }} min</td>
+                                <td>{{ "%.1f"|format(user.total_minutes / 60) }} hours</td>
+                                <td>
+                                    {% if user.total_minutes >= 300 %}
+                                        <span class="badge bg-success">🏅 Super Learner</span>
+                                    {% elif user.total_minutes >= 120 %}
+                                        <span class="badge bg-primary">📚 Book Worm</span>
+                                    {% elif user.total_minutes >= 60 %}
+                                        <span class="badge bg-info">⭐ Rising Star</span>
+                                    {% elif user.total_minutes > 0 %}
+                                        <span class="badge bg-light text-dark">🌱 Getting Started</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">📖 New Student</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Motivational Footer -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info border-0 text-center">
+            <h5 class="alert-heading">
+                <i class="fas fa-lightbulb text-warning me-2"></i>
+                Keep Learning, Keep Growing!
+            </h5>
+            <p class="mb-0">
+                Every minute you study counts! 📖 Climb the leaderboard by studying consistently. 
+                <strong>Good luck, future champions!</strong> 🌟
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add sparkle animation to the champion
+    const champion = document.querySelector('.fa-trophy');
+    if (champion) {
+        setInterval(() => {
+            champion.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                champion.style.transform = 'scale(1)';
+            }, 200);
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}
