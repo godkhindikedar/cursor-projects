@@ -4,7 +4,7 @@
 I'm a **Software Engineering Leader** passionate about Cloud & AI technology, with a proven track record of success in enhancing business processes within the logistics domain. I lead high-performing teams in app development and modernization endeavors, specializing in driving innovation and efficiency through cutting-edge technologies.
 
 - 🔭 I'm currently working as **Manager, Software Engineering** at **RXO** (Freight Brokerage)
-- 🌱 I'm currently learning on Agentic Ai and uts usecases. 
+- 🌱 I'm currently learning on Agentic Ai and its usecases. 
 - 💬 Ask me about **Cloud Architecture, API Development, Team Leadership, .NET, Azure, GCP, and Logistics Technology**
 - 📫 How to reach me: **kedargit@gmail.com**
 - 🌍 Location: **Greater Chicago Area**
